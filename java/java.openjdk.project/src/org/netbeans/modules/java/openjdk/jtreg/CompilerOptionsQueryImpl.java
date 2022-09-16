@@ -31,13 +31,13 @@ public class CompilerOptionsQueryImpl implements CompilerOptionsQueryImplementat
 
     @Override
     public Result getOptions(FileObject file) {
-        TestRootDescription rootDesc = TestRootDescription.findRootDescriptionFor(file);
+//        TestRootDescription rootDesc = TestRootDescription.findRootDescriptionFor(file);
+//
+//        if (rootDesc == null) {
+//            return null;
+//        }
 
-        if (rootDesc == null) {
-            return null;
-        }
-
-        //enable preview in tests:
+        //enable preview always
         return ENABLE_PREVIEW;
     }
 
