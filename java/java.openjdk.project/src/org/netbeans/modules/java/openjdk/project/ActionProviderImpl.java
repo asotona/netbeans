@@ -227,7 +227,7 @@ public class ActionProviderImpl implements ActionProvider {
                         sourceCP = ClassPath.getClassPath(file, ClassPath.SOURCE);
                         break;
                     case TEST:
-                        sourceCP = ClassPathSupport.createClassPath(BuildUtils.getFileObject(project.getProjectDirectory(), "../../test"));
+                        sourceCP = ClassPathSupport.createClassPath(file.getParent(), BuildUtils.getFileObject(project.getProjectDirectory(), "../../test"));
                         break;
                     default:
                         throw new IllegalStateException(kind.name());

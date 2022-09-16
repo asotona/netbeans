@@ -23,9 +23,13 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOError;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +38,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarOutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -154,7 +159,7 @@ public class ClassPathProviderImpl implements ClassPathProvider {
             if (root.kind == RootKind.MAIN_SOURCES) {
                 sourceRoots.add(new PathResourceImpl(root));
             } else if (root.kind == RootKind.TEST_SOURCES) {
-                testsRegRoots.add(new PathResourceImpl(root));
+                testsRegRoots.add(new PathResourceImpl(root, true));
             }
         }
         
@@ -277,10 +282,15 @@ public class ClassPathProviderImpl implements ClassPathProvider {
 
         private final Root root;
         private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+        private final boolean includeSubdirs;
 
         public PathResourceImpl(Root root) {
+            this(root, false);
+        }
+        public PathResourceImpl(Root root, boolean includeSubdirs) {
             this.root = root;
             this.root.addChangeListener(this);
+            this.includeSubdirs = includeSubdirs;
         }
 
         @Override
@@ -290,7 +300,24 @@ public class ClassPathProviderImpl implements ClassPathProvider {
 
         @Override
         public URL[] getRoots() {
-            return new URL[] { root.getLocation() };
+            return includeSubdirs
+                    ? walk(root.getLocation())
+                    : new URL[] { root.getLocation() };
+        }
+
+        private static URL[] walk(URL root) {
+            try (Stream<Path> paths = Files.walk(Path.of(root.toURI()))) {
+                return paths.flatMap(p -> {
+                    try {
+                        if (p.toFile().isDirectory())
+                            return Stream.of(p.toUri().toURL());
+                    } catch (RuntimeException | IOError | IOException ignore) {}
+                    return Stream.empty();
+                }).toArray(URL[]::new);
+            } catch (RuntimeException | IOException | URISyntaxException ignore) {
+                //fall back to single source root
+                return new URL[] {root};
+            }
         }
 
         @Override
