@@ -18,12 +18,13 @@
  */
 package org.netbeans.modules.java.file.launcher.actions;
 
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.Future;
 import org.netbeans.api.extexecution.ExecutionDescriptor;
 import org.netbeans.api.extexecution.ExecutionService;
 import org.netbeans.modules.java.file.launcher.SingleSourceFileUtil;
 import org.netbeans.api.extexecution.base.ExplicitProcessParameters;
-import org.netbeans.spi.project.ActionProgress;
 import org.netbeans.spi.project.ActionProvider;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Lookup;
@@ -40,6 +41,10 @@ import org.openide.windows.InputOutput;
  */
 @ServiceProvider(service = ActionProvider.class)
 public final class SingleJavaSourceRunActionProvider implements ActionProvider {
+
+    private final Map<FileObject, Future<Integer>> running = new WeakHashMap<>();
+    private volatile boolean rerun = false;
+
     @Override
     public String[] getSupportedActions() {
         return new String[]{
@@ -56,23 +61,36 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
         FileObject fileObject = SingleSourceFileUtil.getJavaFileWithoutProjectFromLookup(context);
         if (fileObject == null) 
             return;
+        var previous = running.get(fileObject);
+        if (previous != null && !previous.isDone()) {
+            rerun = true;
+            if (previous.cancel(true)) {
+                return;
+            }
+            rerun = false;
+        }
 
         ExplicitProcessParameters params = ExplicitProcessParameters.buildExplicitParameters(context);
-        InputOutput io = IOProvider.getDefault().getIO(Bundle.CTL_SingleJavaFile(), false);
-        ActionProgress progress = ActionProgress.start(context);
+        InputOutput io = IOProvider.getDefault().getIO(fileObject.getNameExt(), false);
         ExecutionDescriptor descriptor = new ExecutionDescriptor().
+            showProgress(true).
             controllable(true).
             frontWindow(true).
             preExecution(null).
             inputOutput(io).
+            inputVisible(true).
             postExecution((exitCode) -> {
-                progress.finished(exitCode == 0);
+                if (rerun) {
+                    rerun = false;
+                    invokeAction(command, context);
+                }
             });
         LaunchProcess process = invokeActionHelper(io, command, fileObject, params);
         ExecutionService exeService = ExecutionService.newService(
                     process,
-                    descriptor, "Running Single Java File");
-        Future<Integer> exitCode = exeService.run();
+                    descriptor, fileObject.getNameExt());
+
+        running.put(fileObject, exeService.run());
     }
 
     @Override
