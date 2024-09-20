@@ -26,7 +26,10 @@ import org.netbeans.api.extexecution.ExecutionService;
 import org.netbeans.modules.java.file.launcher.SingleSourceFileUtil;
 import org.netbeans.api.extexecution.base.ExplicitProcessParameters;
 import org.netbeans.spi.project.ActionProvider;
+import org.openide.cookies.SaveCookie;
 import org.openide.filesystems.FileObject;
+import org.openide.loaders.DataObject;
+import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
@@ -61,6 +64,12 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
         FileObject fileObject = SingleSourceFileUtil.getJavaFileWithoutProjectFromLookup(context);
         if (fileObject == null) 
             return;
+        try {
+            SaveCookie sc = DataObject.find(fileObject).getLookup().lookup(SaveCookie.class);
+            if (sc != null) {
+                sc.save();
+            }
+        } catch (Exception ignore) {}
         var previous = running.get(fileObject);
         if (previous != null && !previous.isDone()) {
             rerun = true;
