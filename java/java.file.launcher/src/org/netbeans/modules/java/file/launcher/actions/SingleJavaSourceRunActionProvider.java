@@ -61,15 +61,17 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
     })
     @Override
     public void invokeAction(String command, Lookup context) throws IllegalArgumentException {
+        for (DataObject dataObject : DataObject.getRegistry().getModifiedSet()) {
+            SaveCookie saveCookie = dataObject.getLookup().lookup(SaveCookie.class);
+            if (saveCookie != null) {
+                try {
+                    saveCookie.save();
+                } catch (Exception ignore) {}
+            }
+        }
         FileObject fileObject = SingleSourceFileUtil.getJavaFileWithoutProjectFromLookup(context);
         if (fileObject == null) 
             return;
-        try {
-            SaveCookie sc = DataObject.find(fileObject).getLookup().lookup(SaveCookie.class);
-            if (sc != null) {
-                sc.save();
-            }
-        } catch (Exception ignore) {}
         var previous = running.get(fileObject);
         if (previous != null && !previous.isDone()) {
             rerun = true;
@@ -80,13 +82,11 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
         }
 
         ExplicitProcessParameters params = ExplicitProcessParameters.buildExplicitParameters(context);
-        InputOutput io = IOProvider.getDefault().getIO(fileObject.getNameExt(), false);
         ExecutionDescriptor descriptor = new ExecutionDescriptor().
             showProgress(true).
             controllable(true).
             frontWindow(true).
             preExecution(null).
-            inputOutput(io).
             inputVisible(true).
             postExecution((exitCode) -> {
                 if (rerun) {
@@ -94,7 +94,7 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
                     invokeAction(command, context);
                 }
             });
-        LaunchProcess process = invokeActionHelper(io, command, fileObject, params);
+        LaunchProcess process = invokeActionHelper(command, fileObject, params);
         ExecutionService exeService = ExecutionService.newService(
                     process,
                     descriptor, fileObject.getNameExt());
@@ -108,9 +108,9 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
         return fileObject != null;
     }
     
-    final LaunchProcess invokeActionHelper (InputOutput io, String command, FileObject fo, ExplicitProcessParameters params) {
+    final LaunchProcess invokeActionHelper (String command, FileObject fo, ExplicitProcessParameters params) {
         JPDAStart start = ActionProvider.COMMAND_DEBUG_SINGLE.equals(command) ?
-                new JPDAStart(io, fo) : null;
+                new JPDAStart(null, fo) : null;
         return new LaunchProcess(fo, start, params);
     }
         
