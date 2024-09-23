@@ -26,15 +26,11 @@ import org.netbeans.api.extexecution.ExecutionService;
 import org.netbeans.modules.java.file.launcher.SingleSourceFileUtil;
 import org.netbeans.api.extexecution.base.ExplicitProcessParameters;
 import org.netbeans.spi.project.ActionProvider;
-import org.openide.cookies.SaveCookie;
+import org.openide.LifecycleManager;
 import org.openide.filesystems.FileObject;
-import org.openide.loaders.DataObject;
-import org.openide.loaders.DataObjectNotFoundException;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
-import org.openide.windows.IOProvider;
-import org.openide.windows.InputOutput;
 
 /**
  * This class provides support to run a single Java file without a parent
@@ -61,14 +57,7 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
     })
     @Override
     public void invokeAction(String command, Lookup context) throws IllegalArgumentException {
-        for (DataObject dataObject : DataObject.getRegistry().getModifiedSet()) {
-            SaveCookie saveCookie = dataObject.getLookup().lookup(SaveCookie.class);
-            if (saveCookie != null) {
-                try {
-                    saveCookie.save();
-                } catch (Exception ignore) {}
-            }
-        }
+        LifecycleManager.getDefault().saveAll();
         FileObject fileObject = SingleSourceFileUtil.getJavaFileWithoutProjectFromLookup(context);
         if (fileObject == null) 
             return;
@@ -110,7 +99,7 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
     
     final LaunchProcess invokeActionHelper (String command, FileObject fo, ExplicitProcessParameters params) {
         JPDAStart start = ActionProvider.COMMAND_DEBUG_SINGLE.equals(command) ?
-                new JPDAStart(null, fo) : null;
+                new JPDAStart(fo) : null;
         return new LaunchProcess(fo, start, params);
     }
         
