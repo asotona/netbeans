@@ -91,6 +91,7 @@ final class LaunchProcess implements Callable<Process> {
                                              .combine(paramsFromAttributes)
                                              .build();
             commandsList.add(javaPath);
+            commandsList.add("--enable-preview");
 
             if (realParameters.getLauncherArguments()!= null) {
                 commandsList.addAll(realParameters.getLauncherArguments());

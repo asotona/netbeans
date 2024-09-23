@@ -85,12 +85,7 @@ public class SharedRootData {
 
     private void addPropertiesFor(FileObject file, Map<String, String> newProperties) {
         if (file.isData() && "text/x-java".equals(file.getMIMEType())) {
-            String vmOptions = (String)file.getAttribute(SingleSourceFileUtil.FILE_VM_OPTIONS);
-            if (vmOptions == null) try {
-                vmOptions = "--enable-preview";
-                file.setAttribute(SingleSourceFileUtil.FILE_VM_OPTIONS, vmOptions);
-            } catch (IOException ignore) {}
-            newProperties.put(FileUtil.getRelativePath(root, file), vmOptions);
+            newProperties.put(FileUtil.getRelativePath(root, file), (String)file.getAttribute(SingleSourceFileUtil.FILE_VM_OPTIONS));
         }
     }
 
