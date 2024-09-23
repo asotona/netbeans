@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.netbeans.api.java.platform.JavaPlatform;
+import org.netbeans.api.java.platform.JavaPlatformManager;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.modules.java.file.launcher.queries.MultiSourceRootProvider;
 import org.netbeans.modules.java.file.launcher.spi.SingleFileOptionsQueryImplementation;
@@ -41,6 +42,7 @@ import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.util.ChangeSupport;
 import org.openide.util.Lookup;
+import org.openide.util.NbPreferences;
 
 /**
  *
@@ -113,6 +115,10 @@ public final class SingleSourceFileUtil {
         compileCommandList.add(javacPath);
         compileCommandList.add("-g"); //NOI18N
         String vmOptions = compilerVmOptionsObj != null ? ((String) compilerVmOptionsObj).trim() : ""; // NOI18N
+        if (!vmOptions.isEmpty()) {
+            compileCommandList.addAll(Arrays.asList(vmOptions.split(" "))); //NOI18N
+        }
+        vmOptions = NbPreferences.forModule(SingleSourceFileUtil.class).get("vmOptions", "").trim(); // NOI18N
         if (!vmOptions.isEmpty()) {
             compileCommandList.addAll(Arrays.asList(vmOptions.split(" "))); //NOI18N
         }
