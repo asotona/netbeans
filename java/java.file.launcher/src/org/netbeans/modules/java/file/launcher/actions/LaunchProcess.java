@@ -34,6 +34,7 @@ import org.netbeans.modules.java.file.launcher.SingleSourceFileUtil;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.BaseUtilities;
+import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
 
 final class LaunchProcess implements Callable<Process> {
@@ -78,10 +79,15 @@ final class LaunchProcess implements Callable<Process> {
             URI cwd = SingleSourceFileUtil.getOptionsFor(fileObject).getWorkDirectory();
             File workDir = Utilities.toFile(cwd);
 
+            List<String> vmOptions  = readArgumentsFromAttribute(fileObject, SingleSourceFileUtil.FILE_VM_OPTIONS);
+            if ((vmOptions == null || vmOptions.isEmpty()) && NbPreferences.forModule(LaunchProcess.class).getBoolean("enablePreview", false)) {
+                vmOptions = List.of("--enable-preview", "--source", jdk.getSpecification().getVersion().toString());
+            }
+
             ExplicitProcessParameters paramsFromAttributes =
                     ExplicitProcessParameters.builder()
                                              .args(readArgumentsFromAttribute(fileObject, SingleSourceFileUtil.FILE_ARGUMENTS))
-                                             .launcherArgs(readArgumentsFromAttribute(fileObject, SingleSourceFileUtil.FILE_VM_OPTIONS))
+                                             .launcherArgs(vmOptions)
                                              .workingDirectory(workDir)
                                              .build();
 
@@ -103,7 +109,7 @@ final class LaunchProcess implements Callable<Process> {
             if (compile) {
                 commandsList.add("-cp");
                 commandsList.add(FileUtil.toFile(fileObject.getParent()).toString());
-                commandsList.add(fileObject.getName());
+                commandsList.add(fileObject.getNameExt());
             } else {
                 commandsList.add(FileUtil.toFile(fileObject).getAbsolutePath());
             }

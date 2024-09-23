@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.netbeans.api.java.platform.JavaPlatform;
+import org.netbeans.api.java.platform.JavaPlatformManager;
 import org.netbeans.api.project.FileOwnerQuery;
 import org.netbeans.modules.java.file.launcher.queries.MultiSourceRootProvider;
 import org.netbeans.modules.java.file.launcher.spi.SingleFileOptionsQueryImplementation;
@@ -41,6 +42,7 @@ import org.openide.filesystems.FileUtil;
 import org.openide.loaders.DataObject;
 import org.openide.util.ChangeSupport;
 import org.openide.util.Lookup;
+import org.openide.util.NbPreferences;
 
 /**
  *
@@ -113,6 +115,9 @@ public final class SingleSourceFileUtil {
         compileCommandList.add(javacPath);
         compileCommandList.add("-g"); //NOI18N
         String vmOptions = compilerVmOptionsObj != null ? ((String) compilerVmOptionsObj).trim() : ""; // NOI18N
+        if (vmOptions.isEmpty()) {
+            vmOptions = getDefaultVmOptions(fileObject);
+        }
         if (!vmOptions.isEmpty()) {
             compileCommandList.addAll(Arrays.asList(vmOptions.split(" "))); //NOI18N
         }
@@ -127,6 +132,25 @@ public final class SingleSourceFileUtil {
             LOG.log(Level.WARNING, "Could not get InputStream of Compile Process"); //NOI18N
         }
         return null;
+    }
+    static String getDefaultVmOptions(FileObject fo) {
+        if (NbPreferences.forModule(AttributeBasedSingleFileOptions.class).getBoolean("enablePreview", false)) {
+            String runJDKAttribute = fo.getAttribute(SingleSourceFileUtil.FILE_JDK) instanceof String str ? str : null;
+            if (runJDKAttribute != null && !runJDKAttribute.isBlank()) {
+                for (JavaPlatform jdk : JavaPlatformManager.getDefault().getInstalledPlatforms()) {
+                    if (runJDKAttribute.equals(jdk.getDisplayName())) {
+                        return enablePreviewFor(jdk);
+                    }
+                }
+                Logger.getLogger(AttributeBasedSingleFileOptions.class.getName()).log(Level.WARNING, "Unknown JDK: [{0}]", runJDKAttribute);
+            }
+            return enablePreviewFor(JavaPlatformManager.getDefault().getDefaultPlatform());
+        }
+        return "";
+    }
+
+    private static String enablePreviewFor(JavaPlatform jdk) {
+        return "--enable-preview --source " + jdk.getSpecification().getVersion().toString();
     }
 
     public static boolean hasClassSibling(FileObject fo) {

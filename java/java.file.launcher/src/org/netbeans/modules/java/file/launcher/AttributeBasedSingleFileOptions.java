@@ -92,7 +92,7 @@ public class AttributeBasedSingleFileOptions implements SingleFileOptionsQueryIm
 
             vmOptionsObj = root != null ? root.getAttribute(SingleSourceFileUtil.FILE_VM_OPTIONS) : null;
 
-            return vmOptionsObj != null ? (String) vmOptionsObj : "";
+            return vmOptionsObj != null ? (String) vmOptionsObj : SingleSourceFileUtil.getDefaultVmOptions(source);
         }
 
         @Override
