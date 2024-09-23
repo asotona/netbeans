@@ -34,6 +34,7 @@ import org.netbeans.modules.java.file.launcher.SingleSourceFileUtil;
 import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.BaseUtilities;
+import org.openide.util.NbPreferences;
 import org.openide.util.Utilities;
 
 final class LaunchProcess implements Callable<Process> {
@@ -82,6 +83,8 @@ final class LaunchProcess implements Callable<Process> {
                     ExplicitProcessParameters.builder()
                                              .args(readArgumentsFromAttribute(fileObject, SingleSourceFileUtil.FILE_ARGUMENTS))
                                              .launcherArgs(readArgumentsFromAttribute(fileObject, SingleSourceFileUtil.FILE_VM_OPTIONS))
+                                             .launcherArgs(Arrays.asList(BaseUtilities.parseParameters(
+                                                    NbPreferences.forModule(LaunchProcess.class).get("vmOptions", "").trim()))) //NOI18N
                                              .workingDirectory(workDir)
                                              .build();
 
@@ -103,7 +106,7 @@ final class LaunchProcess implements Callable<Process> {
             if (compile) {
                 commandsList.add("-cp");
                 commandsList.add(FileUtil.toFile(fileObject.getParent()).toString());
-                commandsList.add(fileObject.getName());
+                commandsList.add(fileObject.getNameExt());
             } else {
                 commandsList.add(FileUtil.toFile(fileObject).getAbsolutePath());
             }

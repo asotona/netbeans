@@ -29,6 +29,7 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.ChangeSupport;
 import org.openide.util.Lookup;
+import org.openide.util.NbPreferences;
 import org.openide.util.WeakListeners;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -92,7 +93,9 @@ public class AttributeBasedSingleFileOptions implements SingleFileOptionsQueryIm
 
             vmOptionsObj = root != null ? root.getAttribute(SingleSourceFileUtil.FILE_VM_OPTIONS) : null;
 
-            return vmOptionsObj != null ? (String) vmOptionsObj : "";
+            String globalVmOptions = NbPreferences.forModule(AttributeBasedSingleFileOptions.class).get("vmOptions", ""); // NOI18N
+
+            return vmOptionsObj != null ? (String) vmOptionsObj + " " + globalVmOptions : globalVmOptions; // NOI18N
         }
 
         @Override

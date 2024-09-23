@@ -30,6 +30,7 @@ import org.openide.LifecycleManager;
 import org.openide.filesystems.FileObject;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
+import org.openide.util.NbPreferences;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -59,7 +60,7 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
     public void invokeAction(String command, Lookup context) throws IllegalArgumentException {
         LifecycleManager.getDefault().saveAll();
         FileObject fileObject = SingleSourceFileUtil.getJavaFileWithoutProjectFromLookup(context);
-        if (fileObject == null) 
+        if (fileObject == null)
             return;
         var previous = running.get(fileObject);
         if (previous != null && !previous.isDone()) {
@@ -88,7 +89,10 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
                     process,
                     descriptor, fileObject.getNameExt());
 
-        running.put(fileObject, exeService.run());
+        Future<Integer> future = exeService.run();
+        if (NbPreferences.forModule(SingleJavaSourceRunActionProvider.class).getBoolean("stopAndRun", false)) {
+            running.put(fileObject, future);
+        }
     }
 
     @Override
@@ -96,11 +100,11 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
         FileObject fileObject = SingleSourceFileUtil.getJavaFileWithoutProjectFromLookup(context);
         return fileObject != null;
     }
-    
+
     final LaunchProcess invokeActionHelper (String command, FileObject fo, ExplicitProcessParameters params) {
         JPDAStart start = ActionProvider.COMMAND_DEBUG_SINGLE.equals(command) ?
                 new JPDAStart(fo) : null;
         return new LaunchProcess(fo, start, params);
     }
-        
+
 }
