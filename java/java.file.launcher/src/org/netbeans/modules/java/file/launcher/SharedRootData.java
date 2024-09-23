@@ -85,7 +85,7 @@ public class SharedRootData {
 
     private void addPropertiesFor(FileObject file, Map<String, String> newProperties) {
         if (file.isData() && "text/x-java".equals(file.getMIMEType())) {
-            newProperties.put(FileUtil.getRelativePath(root, file), (String)file.getAttribute(SingleSourceFileUtil.FILE_VM_OPTIONS));
+            newProperties.put(FileUtil.getRelativePath(root, file), (String) file.getAttribute(SingleSourceFileUtil.FILE_VM_OPTIONS));
         }
     }
 
