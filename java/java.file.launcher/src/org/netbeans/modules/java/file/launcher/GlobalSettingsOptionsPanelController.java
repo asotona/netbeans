@@ -32,7 +32,7 @@ import org.openide.util.Lookup;
         keywords = "#AdvancedOption_Keywords_GlobalSettings",
         keywordsCategory = "Java/GlobalSettings"
 )
-@org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_GlobalSettings=Single Java", "AdvancedOption_Keywords_GlobalSettings=single source"})
+@org.openide.util.NbBundle.Messages({"AdvancedOption_DisplayName_GlobalSettings=Source Launcher", "AdvancedOption_Keywords_GlobalSettings=single source"})
 public final class GlobalSettingsOptionsPanelController extends OptionsPanelController {
 
     private GlobalSettingsPanel panel;
