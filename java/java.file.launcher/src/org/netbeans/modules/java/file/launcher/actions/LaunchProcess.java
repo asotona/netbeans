@@ -114,6 +114,7 @@ final class LaunchProcess implements Callable<Process> {
             if (realParameters.getArguments() != null) {
                 commandsList.addAll(realParameters.getArguments());
             }
+
             ProcessBuilder runFileProcessBuilder = new ProcessBuilder(commandsList);
             runFileProcessBuilder.environment().putAll(realParameters.getEnvironmentVariables());
             runFileProcessBuilder.directory(realParameters.getWorkingDirectory());
