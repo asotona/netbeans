@@ -84,7 +84,7 @@ final class LaunchProcess implements Callable<Process> {
                                              .args(readArgumentsFromAttribute(fileObject, SingleSourceFileUtil.FILE_ARGUMENTS))
                                              .launcherArgs(readArgumentsFromAttribute(fileObject, SingleSourceFileUtil.FILE_VM_OPTIONS))
                                              .launcherArgs(Arrays.asList(BaseUtilities.parseParameters(
-                                                    NbPreferences.forModule(LaunchProcess.class).get("vmOptions", "").trim()))) //NOI18N
+                                                    NbPreferences.forModule(LaunchProcess.class).get(SingleSourceFileUtil.GLOBAL_VM_OPTIONS, "").trim()))) //NOI18N
                                              .workingDirectory(workDir)
                                              .build();
 

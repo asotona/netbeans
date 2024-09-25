@@ -75,9 +75,9 @@ final class GlobalSettingsPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(vmTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(vmLabel))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(vmLabel)
+                    .addComponent(vmTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(singleRunCheckBox)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -86,14 +86,14 @@ final class GlobalSettingsPanel extends javax.swing.JPanel {
 
     void load() {
         Preferences prefs = NbPreferences.forModule(GlobalSettingsPanel.class);
-        vmTextField.setText(prefs.get("vmOptions", "")); // NOI18N
-        singleRunCheckBox.setSelected(prefs.getBoolean("stopAndRun", false)); // NOI18N
+        vmTextField.setText(prefs.get(SingleSourceFileUtil.GLOBAL_VM_OPTIONS, "")); // NOI18N
+        singleRunCheckBox.setSelected(prefs.getBoolean(SingleSourceFileUtil.GLOBAL_STOP_AND_RUN_OPTION, false)); // NOI18N
     }
 
     void store() {
         Preferences prefs = NbPreferences.forModule(GlobalSettingsPanel.class);
-        prefs.put("vmOptions", vmTextField.getText()); // NOI18N
-        prefs.putBoolean("stopAndRun", singleRunCheckBox.isSelected()); // NOI18N
+        prefs.put(SingleSourceFileUtil.GLOBAL_VM_OPTIONS, vmTextField.getText()); // NOI18N
+        prefs.putBoolean(SingleSourceFileUtil.GLOBAL_STOP_AND_RUN_OPTION, singleRunCheckBox.isSelected()); // NOI18N
     }
 
     boolean valid() {

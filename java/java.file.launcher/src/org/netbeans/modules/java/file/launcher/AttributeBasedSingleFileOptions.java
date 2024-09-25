@@ -93,7 +93,7 @@ public class AttributeBasedSingleFileOptions implements SingleFileOptionsQueryIm
 
             vmOptionsObj = root != null ? root.getAttribute(SingleSourceFileUtil.FILE_VM_OPTIONS) : null;
 
-            String globalVmOptions = NbPreferences.forModule(AttributeBasedSingleFileOptions.class).get("vmOptions", ""); // NOI18N
+            String globalVmOptions = NbPreferences.forModule(AttributeBasedSingleFileOptions.class).get(SingleSourceFileUtil.GLOBAL_VM_OPTIONS, ""); // NOI18N
 
             return vmOptionsObj != null ? (String) vmOptionsObj + " " + globalVmOptions : globalVmOptions; // NOI18N
         }

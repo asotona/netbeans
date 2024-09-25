@@ -90,7 +90,7 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
                     descriptor, fileObject.getNameExt());
 
         Future<Integer> future = exeService.run();
-        if (NbPreferences.forModule(SingleJavaSourceRunActionProvider.class).getBoolean("stopAndRun", false)) {
+        if (NbPreferences.forModule(SingleJavaSourceRunActionProvider.class).getBoolean(SingleSourceFileUtil.GLOBAL_STOP_AND_RUN_OPTION, false)) {
             running.put(fileObject, future);
         }
     }
