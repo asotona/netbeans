@@ -106,7 +106,7 @@ final class LaunchProcess implements Callable<Process> {
             if (compile) {
                 commandsList.add("-cp");
                 commandsList.add(FileUtil.toFile(fileObject.getParent()).toString());
-                commandsList.add(fileObject.getNameExt());
+                commandsList.add(fileObject.getName());
             } else {
                 commandsList.add(FileUtil.toFile(fileObject).getAbsolutePath());
             }
@@ -114,7 +114,6 @@ final class LaunchProcess implements Callable<Process> {
             if (realParameters.getArguments() != null) {
                 commandsList.addAll(realParameters.getArguments());
             }
-
             ProcessBuilder runFileProcessBuilder = new ProcessBuilder(commandsList);
             runFileProcessBuilder.environment().putAll(realParameters.getEnvironmentVariables());
             runFileProcessBuilder.directory(realParameters.getWorkingDirectory());
