@@ -23,11 +23,12 @@ import java.beans.PropertyChangeSupport;
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
 import org.netbeans.spi.options.OptionsPanelController;
+import org.netbeans.modules.options.java.api.JavaOptions;
 import org.openide.util.HelpCtx;
 import org.openide.util.Lookup;
 
 @OptionsPanelController.SubRegistration(
-        location = "Java",
+        location = JavaOptions.JAVA,
         displayName = "#AdvancedOption_DisplayName_GlobalSettings",
         keywords = "#AdvancedOption_Keywords_GlobalSettings",
         keywordsCategory = "Java/GlobalSettings"
