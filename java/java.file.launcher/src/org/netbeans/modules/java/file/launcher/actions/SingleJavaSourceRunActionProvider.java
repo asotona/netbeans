@@ -25,6 +25,7 @@ import org.netbeans.api.extexecution.ExecutionDescriptor;
 import org.netbeans.api.extexecution.ExecutionService;
 import org.netbeans.modules.java.file.launcher.SingleSourceFileUtil;
 import org.netbeans.api.extexecution.base.ExplicitProcessParameters;
+import org.netbeans.api.java.platform.JavaPlatformManager;
 import org.netbeans.spi.project.ActionProvider;
 import org.openide.LifecycleManager;
 import org.openide.filesystems.FileObject;
@@ -90,7 +91,7 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
                     descriptor, fileObject.getNameExt());
 
         Future<Integer> future = exeService.run();
-        if (NbPreferences.forModule(SingleJavaSourceRunActionProvider.class).getBoolean(SingleSourceFileUtil.GLOBAL_STOP_AND_RUN_OPTION, false)) {
+        if (NbPreferences.forModule(JavaPlatformManager.class).getBoolean(SingleSourceFileUtil.GLOBAL_STOP_AND_RUN_OPTION, false)) {
             running.put(fileObject, future);
         }
     }

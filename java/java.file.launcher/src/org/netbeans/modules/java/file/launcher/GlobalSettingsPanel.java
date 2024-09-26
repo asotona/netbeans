@@ -19,6 +19,7 @@
 package org.netbeans.modules.java.file.launcher;
 
 import java.util.prefs.Preferences;
+import org.netbeans.api.java.platform.JavaPlatformManager;
 import org.openide.util.NbPreferences;
 
 final class GlobalSettingsPanel extends javax.swing.JPanel {
@@ -85,13 +86,13 @@ final class GlobalSettingsPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {
-        Preferences prefs = NbPreferences.forModule(GlobalSettingsPanel.class);
+        Preferences prefs = NbPreferences.forModule(JavaPlatformManager.class);
         vmTextField.setText(prefs.get(SingleSourceFileUtil.GLOBAL_VM_OPTIONS, "")); // NOI18N
         singleRunCheckBox.setSelected(prefs.getBoolean(SingleSourceFileUtil.GLOBAL_STOP_AND_RUN_OPTION, false)); // NOI18N
     }
 
     void store() {
-        Preferences prefs = NbPreferences.forModule(GlobalSettingsPanel.class);
+        Preferences prefs = NbPreferences.forModule(JavaPlatformManager.class);
         prefs.put(SingleSourceFileUtil.GLOBAL_VM_OPTIONS, vmTextField.getText()); // NOI18N
         prefs.putBoolean(SingleSourceFileUtil.GLOBAL_STOP_AND_RUN_OPTION, singleRunCheckBox.isSelected()); // NOI18N
     }

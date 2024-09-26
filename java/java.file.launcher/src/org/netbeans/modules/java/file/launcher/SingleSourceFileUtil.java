@@ -62,8 +62,8 @@ public final class SingleSourceFileUtil {
         return version;
     }
 
-    public static final String GLOBAL_VM_OPTIONS = "global_vm_options"; //NOI18N
-    public static final String GLOBAL_STOP_AND_RUN_OPTION = "global_stop_and_run_option"; //NOI18N
+    public static final String GLOBAL_VM_OPTIONS = "java_file_launcher_global_vm_options"; //NOI18N
+    public static final String GLOBAL_STOP_AND_RUN_OPTION = "java_file_launcher_global_stop_and_run_option"; //NOI18N
 
     // synced with JavaNode
     public static final String FILE_ARGUMENTS = "single_file_run_arguments"; //NOI18N
@@ -121,7 +121,7 @@ public final class SingleSourceFileUtil {
         if (!vmOptions.isEmpty()) {
             compileCommandList.addAll(Arrays.asList(vmOptions.split(" "))); //NOI18N
         }
-        String globalVmOptions = NbPreferences.forModule(SingleSourceFileUtil.class).get(GLOBAL_VM_OPTIONS, "").trim(); // NOI18N
+        String globalVmOptions = NbPreferences.forModule(JavaPlatformManager.class).get(GLOBAL_VM_OPTIONS, "").trim(); // NOI18N
         if (!globalVmOptions.isEmpty()) {
             compileCommandList.addAll(Arrays.asList(globalVmOptions.split(" "))); //NOI18N
         }
