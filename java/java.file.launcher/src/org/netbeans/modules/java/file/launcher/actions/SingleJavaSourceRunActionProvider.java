@@ -18,6 +18,7 @@
  */
 package org.netbeans.modules.java.file.launcher.actions;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Future;
@@ -72,12 +73,14 @@ public final class SingleJavaSourceRunActionProvider implements ActionProvider {
         }
 
         ExplicitProcessParameters params = ExplicitProcessParameters.buildExplicitParameters(context);
+        String preferredEncoding = System.getProperty("native.encoding"); // NOI18N
         ExecutionDescriptor descriptor = new ExecutionDescriptor().
             showProgress(true).
             controllable(true).
             frontWindow(true).
             preExecution(null).
             inputVisible(true).
+            charset(preferredEncoding != null ? Charset.forName(preferredEncoding) : null).
             postExecution((exitCode) -> {
                 if (rerun) {
                     rerun = false;

@@ -3,5 +3,5 @@ AutoUpdate-Show-In-Client: false
 OpenIDE-Module: org.netbeans.modules.java.file.launcher
 OpenIDE-Module-Layer: org/netbeans/modules/java/file/launcher/layer.xml
 OpenIDE-Module-Localizing-Bundle: org/netbeans/modules/java/file/launcher/Bundle.properties
-OpenIDE-Module-Specification-Version: 1.2.1
+OpenIDE-Module-Specification-Version: 1.2.2
 
